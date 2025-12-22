@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Bus Tracking System</title>
+
+    <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+
+<nav class="navbar">
+    <div class="container">
+        <div class="nav-brand">
+            <i class="fas fa-bus"></i>
+            <span>Smart Bus Tracker</span>
+        </div>
+        <div class="nav-menu">
+            <a href="{% url 'home' %}" class="nav-link">Home</a>
+            <a href="{% url 'login' %} " class="nav-link active">Login</a>
+            <a href="{% url 'register' %}" class="nav-link">Register</a>
+        </div>
+    </div>
+</nav>
+
+
+<section class="auth-section">
+    <div class="auth-container">
+        <div class="auth-card">
+
+            
+            <div class="auth-form active">
+                <div class="auth-header">
+                    <h2>Welcome Back</h2>
+                    <p>Login to access your dashboard</p>
+                </div>
+
+                
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input type="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+
+                <p style="text-align:center; margin-top:15px;">
+                    Don’t have an account?
+                    <a href="{% url 'register' %}" style="color:#4f46e5;">Register</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
