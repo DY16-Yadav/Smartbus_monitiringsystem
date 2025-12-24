@@ -1,196 +1,253 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - JIT BusTrack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'accounts/css/style.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 
 <body class="dashboard-body">
 
-    <main class="dashboard-main">
-        <header class="topbar">
-            <h1 class="page-title">Dashboard</h1>
-            <a href="{% url 'home' %}" class="back-home-btn">
-                <i class="fas fa-arrow-left"></i> Back to Home
-            </a>
-        </header>
+<main class="dashboard-main">
 
+    <!-- TOP BAR -->
+    <header class="topbar">
+        <h1 class="page-title">Dashboard</h1>
+        <a href="{% url 'home' %}" class="back-home-btn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+        <a href="/admin/" target="_blank" class="back-home-btn">
+           <i class="fas fa-user-shield"></i> Admin Panel
+        </a>
 
-        <div class="dashboard-content">
+    </header>
 
-            <div class="simple-grid">
-                <div class="left-panel">
+    <!-- DASHBOARD CONTENT -->
+    <div class="dashboard-content">
+        <div class="simple-grid">
 
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-gas-pump"></i> Fuel Level</h3>
-                        </div>
-                        <div class="card-body">
-                            <h2><span id="fuel">--</span> %</h2>
-                        </div>
+            <!-- LEFT PANEL -->
+            <div class="left-panel">
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-gas-pump"></i> Fuel Level</h3>
                     </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-tachometer-alt"></i> Speed</h3>
-                        </div>
-                        <div class="card-body">
-                            <h2><span id="speed">--</span> km/h</h2>
-                        </div>
+                    <div class="card-body">
+                        <h2><span id="fuel">--</span> %</h2>
                     </div>
-
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-thermometer-half"></i> Temperature</h3>
-                        </div>
-                        <div class="card-body">
-                            <h2><span id="temp">--</span> °C</h2>
-                        </div>
-                    </div>
-
                 </div>
 
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-tachometer-alt"></i> Speed</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2><span id="speed">--</span> km/h</h2>
+                    </div>
+                </div>
 
-                <div class="right-panel">
-                    <div class="dashboard-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-map-marker-alt"></i> Live GPS Location</h3>
-                        </div>
-                        <div class="card-body">
-                            <div id="map" class="map-container"></div>
-
-                            <div class="map-info">
-                                <div class="map-info-item">
-                                    <strong>Latitude:</strong> <span id="lat">--</span>
-                                </div>
-                                <div class="map-info-item">
-                                    <strong>Longitude:</strong> <span id="lng">--</span>
-                                </div>
-                            </div>
-                        </div>
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-thermometer-half"></i> Temperature</h3>
+                    </div>
+                    <div class="card-body">
+                        <h2><span id="temp">--</span> °C</h2>
                     </div>
                 </div>
 
             </div>
 
+            <!-- RIGHT PANEL -->
+            <div class="right-panel">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-map-marker-alt"></i> Live GPS Location</h3>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="map" class="map-container" style="height:300px;"></div>
+
+                        <div class="map-info">
+                            <div><strong>Latitude:</strong> <span id="lat">--</span></div>
+                            <div><strong>Longitude:</strong> <span id="lng">--</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+<!-- ================= HISTORY SECTION ================= -->
+
+<div class="dashboard-card" style="margin-top:20px;">
+    <div class="card-header">
+        <h3><i class="fas fa-history"></i> Bus Data History</h3>
+    </div>
+
+    <div class="card-body">
+
+        <!-- Time Filter -->
+        <div style="margin-bottom:15px;">
+            <label><strong>Show last</strong></label>
+            <select id="minutesSelect" onchange="fetchTimelyHistory()">
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="120">2 hours</option>
+            </select>
         </div>
 
-    </main>
+        <!-- History Table -->
+        <div style="overflow-x:auto;">
+            <table class="history-table" border="1" width="100%" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Fuel %</th>
+                        <th>Speed</th>
+                        <th>Temp (°C)</th>
+                        <th>Lat</th>
+                        <th>Lng</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="6" align="center">Loading history...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    {% comment %} INLINE LEAFLET JS (ONLY THIS JS) {% endcomment %}
-    {% comment %}
-    <script>
-
-        var lat = 22.7196;
-        var lng = 75.8577;
-
-
-        var map = L.map('map').setView([lat, lng], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-
-        var marker = L.marker([lat, lng]).addTo(map);
-
-        document.getElementById("lat").innerText = lat;
-        document.getElementById("lng").innerText = lng;
-        document.getElementById("fuel").innerText = 72;
-        document.getElementById("speed").innerText = 48;
-        document.getElementById("temp").innerText = 34;
-    </script> {% endcomment %}
+    </div>
+</div>
 
 
+<!-- ================= DYNAMIC JS ================= -->
 
-    <script>
-
-        var lat = 22.7196;
-        var lng = 75.8577;
-        var map = L.map('map').setView([lat, lng], 13);
-
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
-
-
-        //L.marker([lat, lng]).addTo(map);
-        var marker = L.marker([lat, lng]).addTo(map);
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-</body>
-
-</html>
-{% if messages %}
-{% for message in messages %}
-{% if 'success' in message.tags %}
 <script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Registration Successful 🎉',
-        text: '{{ message }}',
-        timer: 3000,
-        showConfirmButton: false
-    });
-</script>
-{% endif %}
+    // Default map position (before DB data loads)
+    let defaultLat = 22.7196;
+    let defaultLng = 75.8577;
 
-{% if 'error' in message.tags %}
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '{{ message }}'
-    });
-</script>
-{% endif %}
-{% endfor %}
-{% endif %}
-<script>
+    const map = L.map('map').setView([defaultLat, defaultLng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    const marker = L.marker([defaultLat, defaultLng]).addTo(map);
+
+    // Fetch latest DB data
     async function fetchBusData() {
         try {
             const response = await fetch("/api/get/");
             const data = await response.json();
 
-            if (data.latitude) {
-
-                document.getElementById("fuel").innerText =
-                    data.fuel_level ? data.fuel_level.toFixed(1) : "--";
-
-                document.getElementById("speed").innerText =
-                    data.speed ?? "--";
-
-                document.getElementById("temp").innerText =
-                    data.temperature ?? "--";
-
-                document.getElementById("lat").innerText =
-                    data.latitude.toFixed(5);
-
-                document.getElementById("lng").innerText =
-                    data.longitude.toFixed(5);
-
-
-                map.setView([data.latitude, data.longitude], 15);
-                marker.setLatLng([data.latitude, data.longitude]);
+            if (data.error) {
+                console.warn("No data in DB yet");
+                return;
             }
 
+            // Update UI from DATABASE
+            document.getElementById("fuel").innerText =
+                data.fuel_percent !== null ? data.fuel_percent : "--";
+
+            document.getElementById("speed").innerText =
+                data.speed ?? "--";
+
+            document.getElementById("temp").innerText =
+                data.temperature ?? "--";
+
+            document.getElementById("lat").innerText =
+                data.latitude.toFixed(5);
+
+            document.getElementById("lng").innerText =
+                data.longitude.toFixed(5);
+
+            // Update map position
+            map.setView([data.latitude, data.longitude], 15);
+            marker.setLatLng([data.latitude, data.longitude]);
+
         } catch (error) {
-            console.error("Error fetching bus data:", error);
+            console.error("Error fetching DB data:", error);
         }
     }
 
-
-    setInterval(fetchBusData, 5000);
+    // Load once + auto refresh
     fetchBusData();
+    setInterval(fetchBusData, 5000);
 </script>
+<script>
+    // Load last 2 hours history by default
+    async function fetchLatestHistory() {
+        try {
+            const res = await fetch("/history_latest/");
+            const data = await res.json();
+
+            renderHistory(data.history || []);
+        } catch (err) {
+            console.error("History latest error:", err);
+        }
+    }
+
+    // Load history based on selected minutes
+    async function fetchTimelyHistory() {
+        const minutes = document.getElementById("minutesSelect").value;
+
+        try {
+            const res = await fetch(`/history_timely/?minutes=${minutes}`);
+            const data = await res.json();
+
+            renderHistory(data.history || []);
+        } catch (err) {
+            console.error("History timely error:", err);
+        }
+    }
+
+    // Render table rows
+    function renderHistory(records) {
+        const body = document.getElementById("historyBody");
+        body.innerHTML = "";
+
+        if (records.length === 0) {
+            body.innerHTML = `<tr>
+                <td colspan="6" align="center">No history data</td>
+            </tr>`;
+            return;
+        }
+
+        records.forEach(r => {
+            const row = `
+                <tr>
+                    <td>${new Date(r.timestamp).toLocaleString()}</td>
+                    <td>${r.fuel_percent ?? "--"}</td>
+                    <td>${r.speed ?? "--"}</td>
+                    <td>${r.temperature ?? "--"}</td>
+                    <td>${r.latitude.toFixed(4)}</td>
+                    <td>${r.longitude.toFixed(4)}</td>
+                </tr>
+            `;
+            body.innerHTML += row;
+        });
+    }
+
+    // Load history on page load
+    fetchLatestHistory();
+</script>
+
+
+</body>
+</html>

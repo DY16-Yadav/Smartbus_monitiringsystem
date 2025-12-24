@@ -13,7 +13,3 @@ urlpatterns = [
     path('api/history/latest/', views.history_latest, name='history_latest'),
     path('api/history/timely/', views.history_timely, name='history_timely'),
 ]
-
-
-
-
