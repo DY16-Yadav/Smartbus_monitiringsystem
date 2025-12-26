@@ -123,11 +123,10 @@ def get_data(request):
 
 
 def history_latest(request):
-    time_limit = timezone.now() - timedelta(hours=2)
-    records = BusData.objects.filter(timestamp__gte=time_limit)
+    records = BusData.objects.all().order_by('-timestamp')[:50]
 
     data = [{
-        "timestamp": r.timestamp,
+        "timestamp": r.timestamp.isoformat(),
         "latitude": r.latitude,
         "longitude": r.longitude,
         "speed": r.speed,
@@ -138,13 +137,17 @@ def history_latest(request):
     return JsonResponse({"history": data})
 
 
+
 def history_timely(request):
     minutes = int(request.GET.get("minutes", 30))
-    time_limit = timezone.now() - timedelta(minutes=minutes)
-    records = BusData.objects.filter(timestamp__gte=time_limit)
+
+    # Approx mapping: 30 min → 20 records, 60 → 40, 120 → 80
+    limit = minutes // 2  
+
+    records = BusData.objects.all().order_by('-timestamp')[:limit]
 
     data = [{
-        "timestamp": r.timestamp,
+        "timestamp": r.timestamp.isoformat(),
         "latitude": r.latitude,
         "longitude": r.longitude,
         "speed": r.speed,
@@ -153,6 +156,7 @@ def history_timely(request):
     } for r in records]
 
     return JsonResponse({"minutes": minutes, "history": data})
+
 
 
 

@@ -15,6 +15,10 @@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+ 
+
 </head>
 
 <body class="dashboard-body">
@@ -194,7 +198,7 @@
     // Load last 2 hours history by default
     async function fetchLatestHistory() {
         try {
-            const res = await fetch("/history_latest/");
+            const res = await fetch("/api/history/latest/");
             const data = await res.json();
 
             renderHistory(data.history || []);
@@ -208,7 +212,7 @@
         const minutes = document.getElementById("minutesSelect").value;
 
         try {
-            const res = await fetch(`/history_timely/?minutes=${minutes}`);
+            const res = await fetch(`/api/history/timely/?minutes=${minutes}`);
             const data = await res.json();
 
             renderHistory(data.history || []);
@@ -247,6 +251,32 @@
     // Load history on page load
     fetchLatestHistory();
 </script>
+{% if messages %}
+{% for message in messages %}
+    {% if 'success' in message.tags %}
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success 🎉',
+            text: '{{ message }}',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+    {% endif %}
+
+    {% if 'error' in message.tags %}
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error ❌',
+            text: '{{ message }}'
+        });
+    </script>
+    {% endif %}
+{% endfor %}
+{% endif %}
+
 
 
 </body>
